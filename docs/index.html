@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <title>Simple Map</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  </head>
+  <body>
+    <h1>This is an API App</h1>
+    <div id="input">
+      <form id="form">
+        <label for="city">Enter a city:</label>
+        <input type="text" name="city" id="location" placeholder="City">
+        <input type="submit">
+      </form>
+    </div>
+    <div id="output-div">
+      <h2 id="city-display">Number of GitHub users in </h2>
+      <h3 id="output"></h3>
+    </div>
+    <div id="map"></div>
+   
+
+
+    <script id="location-script"></script>
+    <script id="map-script"></script>
+    <script id="userlist-script" src="api.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
