@@ -1,30 +1,48 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="styles.css">
-    <title>Simple Map</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-  </head>
-  <body>
-    <h1>This is an API App</h1>
-    <div id="input">
-      <form id="form">
-        <label for="city">Enter a city:</label>
-        <input type="text" name="city" id="location" placeholder="City">
-        <input type="submit">
-      </form>
-    </div>
-    <div id="output-div">
-      <h2 id="city-display">Number of GitHub users in </h2>
-      <h3 id="output"></h3>
-    </div>
+
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <title>Simple Map</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+</head>
+
+<body>
+  <h1>This is an API App</h1>
+  <div id="input-div" class="container">
+    <label for="city">Enter a city:</label>
+    <input type="text" name="city" id="location" placeholder="City">
+  </div>
+  <div id='bb-div' class="container">
+    <button id="get-bb">Get BB Coordinates</button>
+    <div id="coordinates-text">BB Coordinates: </div>
+  </div>
+  <div id="nearby-div" class="container">
+    <button id="get-nearby-cities">Get Nearby Cities</button>
+    <div id='cities-text'>Nearby Cities:</div>
+  </div>
+  <div id="github-div" class="container">
+    <h2>GitHub Users In Cities:</h2>
+    <div id="users-text">Users:</div>
+  </div>
+  <div id="latlng-div" class="container">
+    <button id="get-latlng">Get Lat Lng</button>
+    <h2>LatLng for Each city:</h2>
+    <div id='latlng-text'>Lat-Lng:</div>
+  </div>
+  <div id='map-div' class="container">
+    <button id="get-map">Get Map of Users</button>
     <div id="map"></div>
-   
+  </div>
 
 
-    <script id="location-script"></script>
-    <script id="map-script"></script>
-    <script id="userlist-script" src="api.js"></script>
-    <script src="app.js"></script>
-  </body>
+
+  <!-- <script id="location-script"></script> -->
+  <!-- <script id="map-script"></script> -->
+  <script type="text/javascript"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTpoS8vDEyT-e0D0rDKBO1VOrs0EiVYyo&libraries=places"></script>
+  <script id="userlist-script" src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+
 </html>

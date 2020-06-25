@@ -1,7 +1,6 @@
-#output-div {
-  height: 100px;
-  width: 500px;
-  background-color: lightblue;
+.container {
+  min-width: 500px;
+  min-height: 100px;
 }
 
 #map {
