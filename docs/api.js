@@ -25,9 +25,9 @@ class GeoNames {
     }
 
     async getNearbyCities(city){
-        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=48&south=45.54&east=-116.915&west=-124.76&maxRows=10&username=ljohnston10`);
+        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${city.north}&south=${city.south}&west=${city.west}&east=${city.east}&maxRows=10&username=ljohnston10`);
 
-        const cities= await citiesResponse.json();
+        const cities= await citiesResponse.json(); 
 
         return cities;
     }

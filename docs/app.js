@@ -5,10 +5,10 @@ const citiesText = document.getElementById('cities-text');
 let latitude;
 let longitude;
 const cityBB = { //Hardcoded for now to be Washington state
-    'north': 48,
-    'south': 45.54,
-    'east': -116.915,
-    'west': -124.76
+    north: 48,
+    south: 45.54,
+    east: -116.915,
+    west: -124.76
 }
 let citiesArray = ["Seattle", "Kennewick", "Tacoma", 'Yakima'];
 const citiesLatLng = [];
@@ -28,9 +28,15 @@ document.getElementById('get-map').addEventListener('click', getMap);
 function getCityBBCoordinates() {
     //User input of city
     //output coordinates text
-    for (let key in cityBB) {
-        coordinatesText.textContent += key + ": " + cityBB[key] + "// ";
+    
+    for(let i=0; i<states.length; i++){
+        if(placeArea.value === states[i].abbreviation){
+            console.log(states[i].name);
+        }
     }
+    // for (let key in cityBB) {
+    //     coordinatesText.textContent += key + ": " + cityBB[key] + "// ";
+    // }
 
 }
 
