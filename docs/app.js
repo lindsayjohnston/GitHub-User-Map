@@ -30,10 +30,17 @@ function getCityBBCoordinates() {
     //output coordinates text
     
     for(let i=0; i<states.length; i++){
-        if(placeArea.value === states[i].abbreviation){
-            console.log(states[i].name);
-        }
+        if(placeArea.value === states[i][0]){
+            cityBB.north=states[i][5];
+            cityBB.south=states[i][3];
+            cityBB.east= states[i][4];
+            cityBB.west=states[i][2];
+            break;
+        } 
+        
     }
+
+    console.log(cityBB);
     // for (let key in cityBB) {
     //     coordinatesText.textContent += key + ": " + cityBB[key] + "// ";
     // }
