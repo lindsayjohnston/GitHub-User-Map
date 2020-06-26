@@ -2,8 +2,8 @@
 // class GitHub {
 //     constructor(){
 //         this.client_id= 'Iv1.a8d901da9a22e78e';
-//         this.client_secret='fc8d6ced4da7cb77a1fc0800e3ebe917d4f631e2';
-//         this.user_token='bb888f5334293c92dec50abf0dcd13e4db9fbdc5';
+//         this.client_secret='4f7b41088963d747c483237cc7e9b0744d649a70';
+//         this.user_token='274aeb5735c53a7149d2339ddf837aafde5c9418';
 //     } //
 
 //     // https://api.github.com/users/${user}?client_id=${this.client_id}&client_secret=${this.client_secret}`
