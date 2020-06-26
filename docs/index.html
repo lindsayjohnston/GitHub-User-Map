@@ -2,15 +2,19 @@
 <html>
 
 <head>
+  
   <link rel="stylesheet" href="styles.css">
-  <title>Simple Map</title>
+  <title>GitHub User Map</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 </head>
 
 <body>
-  <h1>This is an API App</h1>
+  <div class="container ">
+    <h1>GitHub User Map</h1>
+    <p>Find the number of users in big cities near a given state.</p>
+  </div>
   <div id="input-div" class="container">
-    <label for="city">Select a State or Country:</label>
+    <label for="city">Select a State:</label>
     <select name="city" id="location">
         <option value="AL">Alabama</option>
         <option value="AK">Alaska</option>
@@ -65,22 +69,24 @@
         <option value="WY">Wyoming</option>
     </select>
   </div>
-  <div id='bb-div' class="container">
+  <div id='bb-div' class="container hidden">
+    <h2>Boundary Box Coordinates for State</h2>
     <button id="get-bb">Get BB Coordinates</button>
     <div id="coordinates-text">BB Coordinates: </div>
   </div>
-  <div id="nearby-div" class="container">
+  <div id="nearby-div" class="container hidden">
     <button id="get-nearby-cities">Get Nearby Cities</button>
     <div id='cities-text'>Nearby Cities:</div>
   </div>
-  <div id="github-div" class="container">
-    <h2>GitHub Users In Cities:</h2>
-    <div id="users-text">Users:</div>
-  </div>
-  <div id="latlng-div" class="container">
+  <div id="latlng-div" class="container hidden">
     <button id="get-latlng">Get Lat Lng</button>
     <h2>LatLng for Each city:</h2>
     <div id='latlng-text'>Lat-Lng:</div>
+  </div>
+  <div id="github-div" class="container hidden">
+    <button id="get-gh-users">Get GitHub Users</button>
+    <h2>GitHub Users In Cities:</h2>
+    <div id="users-text">Users:</div>
   </div>
   <div id='map-div' class="container">
     <button id="get-map">Get Map of Users</button>

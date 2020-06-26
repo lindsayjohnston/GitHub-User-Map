@@ -1,7 +1,28 @@
-.container {
-  min-width: 500px;
-  min-height: 100px;
+body{
+  font-family: Arial, Helvetica, sans-serif;
 }
+
+.container {
+  background-color: lightblue;
+  padding: 5px;
+  text-align: center;
+  margin: 5px;
+}
+
+#map-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#get-map{
+  margin-bottom: 5px;
+}
+
+.hidden{
+  display: none;
+} 
 
 #map {
   height: 500px;
