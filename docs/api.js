@@ -1,7 +1,7 @@
 
 class GitHub {
     constructor(){
-       
+        
     } //
 
     // https://api.github.com/users/${user}?client_id=${this.client_id}&client_secret=${this.client_secret}`
@@ -29,13 +29,26 @@ class GeoNames {
     }
 
     async getNearbyCities(state){
-        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${state.north}&south=${state.south}&west=${state.west}&east=${state.east}&maxRows=30&username=ljohnston10`);
+        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${state.north}&south=${state.south}&west=${state.west}&east=${state.east}&maxRows=29&username=ljohnston10`);
 
         const cities= await citiesResponse.json(); 
 
         return cities; //pretty much in order of greatest population to least
     }
 }
+
+// class AutoComplete {
+//     constructor(){
+//         this.key= 'AIzaSyDTpoS8vDEyT-e0D0rDKBO1VOrs0EiVYyo';
+//     }
+//     async getCity(input){
+//         const getCityResponse= await fetch (`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${this.key}`);
+
+//         const city= await getCityResponse();
+
+//         return city;
+//     }
+// }
 
 
 // -124.763068	45.543541	-116.915989	49.002494

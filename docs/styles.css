@@ -7,6 +7,10 @@ body{
   padding: 5px;
   text-align: center;
   margin: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #map-div{
@@ -20,11 +24,17 @@ body{
   margin-bottom: 5px;
 }
 
-.hidden{
+/* .hidden{
   display: none;
-} 
+}  */
 
 #map {
   height: 500px;
   width: 500px;
+}
+
+#city-output{
+  border-style: solid;
+  height: 200px;
+  width: 300px;
 }

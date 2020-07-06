@@ -3,14 +3,13 @@ const placeArea = document.getElementById('location');
 const coordinatesText = document.getElementById('coordinates-text')
 const citiesText = document.getElementById('cities-text');
 
-//TO STORE INFO ABOUT CHOSEN STATE AND NEARBY CITIES
-const stateBB = {
+const cityBB= {
     north: 0,
     south: 0,
     east: 0,
-    west: 0
+    west: 0,
 }
-let currentState;
+let chosenCity;
 let citiesArray = [];
 let usingDummyData = false;
 
@@ -21,77 +20,151 @@ let batch3=[];
 
 let verifiedCities=[];
 let geoCodeTally=0;
-const citiesLatLng = [];
-const gitHubNumbersArray = [];
+let citiesLatLng = [];
+let gitHubNumbersArray = [];
 
 //FOR GOOGLE MAPS API
 let map;
 let service;
 let infoWindow;
 
+//LISTEN FOR CLICK TO RUN PROGRAM
+document.getElementById('get-map').addEventListener('click', getChosenLatLng);
+document.getElementById('city-input').addEventListener('keydown', guessCity);
 
-
-document.getElementById('get-map').addEventListener('click', getStateBBCoordinates);
-
-
-
-//Change user input to Boundary Box coordinates readable by GeoNames.org
+function guessCity(){
+    let cityInput=document.getElementById('city-input');
+    let options= {
+        types: ['(cities)'],
+        componentRestrictions: {country: 'us'}
+    };
+    let autocomplete= new google.maps.places.Autocomplete(cityInput, options);
+}
+//THIS IS ONLY USED FOR DEBUGGING 
 function clearText(area) {
     area.textContent = '';
 }
 
-function getStateBBCoordinates() {
-    clearText(document.getElementById('coordinates-text'));
-    for (let i = 0; i < states.length; i++) {
-        if (placeArea.value === states[i][0]) {
-            currentState = states[i][0];
-            stateBB.north = states[i][5];
-            stateBB.south = states[i][3];
-            stateBB.east = states[i][4];
-            stateBB.west = states[i][2];
-            break;
-        }
-    }
-    document.getElementById('coordinates-text').textContent += placeArea.value + " " + JSON.stringify(stateBB);
-
-    getNearbyCities();
+//RELOAD ALL INFO 
+function reloadData(){
+    citiesArray = [];
+    usingDummyData = false;
+    batch1=[];
+    batch2=[];
+    batch3=[];
+    verifiedCities=[];
+    geoCodeTally=0;
+    citiesLatLng = [];
+    gitHubNumbersArray = [];
+    chosenCity='';
+    clearText(coordinatesText);
+    clearText(citiesText);
+    clearText(document.getElementById('latlng-text'));
+    clearText(document.getElementById('users-text'));
 }
 
-function getNearbyCities() {
-    clearText(citiesText);
+function getChosenLatLng(){
+    reloadData();
+    let input= document.getElementById('city-input').value;
+    let inputArray= input.split(', ');
+    chosenCity= inputArray[0];
+    let state= inputArray[1];
+    console.log(inputArray);
+    let geocoderRequest= {
+        address: input
+    }
+
+    const geocoder1 = new google.maps.Geocoder();
+    geocoder1.geocode(geocoderRequest, function(array, status){
+        geoCodeTally++;
+        console.log(array);
+        citiesArray.push(`${chosenCity} ${state}`);
+        verifiedCities.push(`${chosenCity} ${state}`);
+        pushLatLng(array);
+    })
+
+    checkChosenLatLng();
+    //get latLng for chosen city
+    //get cityBBCoordinates 
+    //add city to verified cities
+    //add latlng to latlng
+    //githubnumbersarray?
+    //
+    //fire off getNearbyCities
+}
+
+function checkChosenLatLng(){
+    if(verifiedCities.length === 0){
+        setTimeout(checkChosenLatLng, 200);
+    } else{
+        getCityBBCoordinates();
+    }
+}
+
+//I THINK I HAVE MY UNDERSTANDING OF LAT/LNG SWITCHED BUT IT WORKS
+function getCityBBCoordinates(){
+    let latitude= citiesLatLng[0]['lat'];
+    let longitude= citiesLatLng[0]['lng'];
+    cityBB['south']= latitude - 2.5;
+    cityBB['north']= latitude + 2.5;
+    cityBB['east']= longitude + 4;
+    cityBB['west']= longitude -4;
+
+    getNearbyCities(cityBB);
+}
+// ["WA","Washington",-124.763068,45.543541,-116.915989,49.002494]
+// function getStateBBCoordinates() {
+//     clearText(document.getElementById('coordinates-text'));
+//     reloadData();
+//     for (let i = 0; i < states.length; i++) {
+//         if (placeArea.value === states[i][0]) {
+//             currentState = states[i][0];
+//             stateBB.north = states[i][5];
+//             stateBB.south = states[i][3];
+//             stateBB.east = states[i][4];
+//             stateBB.west = states[i][2];
+//             break;
+//         }
+//     }
+//     document.getElementById('coordinates-text').textContent += placeArea.value + " " + JSON.stringify(stateBB);
+
+//     getNearbyCities();
+// }
+
+function getNearbyCities(bb) {
+    clearText(citiesText); //USED FOR DEBUGGING
     
     const geoNames = new GeoNames;
-    geoNames.getNearbyCities(stateBB)
+    geoNames.getNearbyCities(bb)
         .then(data => {
             if (data.status !== undefined) {
-                alert('There was a problem with the GeoNames server and we will use dummy data to run the App. Sorry about that');
+                alert('There was a problem with the GeoNames server and we will use dummy data surrounding Seattle, WA to run the App. Sorry about that!');
                 citiesArray = ["Seattle WA", "Kennewick WA", "Tacoma WA", 'Yakima WA', 'Richland WA', "Walla Walla WA", 'Olympia WA'];
                 currentState = 'WA';
                 usingDummyData = true;
+                citiesLatLng=[];
+                verifiedCities=[];
                 citiesArray.forEach(city => {
                     citiesText.textContent += city + " //";
                 })
-
             } else {
                 data.geonames.forEach(cityInfo => {
-                    citiesArray.push(cityInfo.name);
-                    citiesText.textContent += cityInfo.name + " //";
+                    if(cityInfo.name !== chosenCity){
+                        citiesArray.push(cityInfo.name);
+                        citiesText.textContent += cityInfo.name + " //";
+                    }
                 });
             }
         });
-
     checkNearbyCities();
 }
 
 function checkNearbyCities() {
-    // console.log("IN check NearbyCities");
     //citiesArray.length should match number of rows requested from GeoNames API
-    if (citiesArray.length !== 30 && !usingDummyData) {
+    if (citiesArray.length !== 29 && !usingDummyData) {
         setTimeout(checkNearbyCities, 200);
     } else {
-        // nearbyCitiesCheck = true;
         if (usingDummyData) {
-            // verifiedCities=citiesArray;
             batch3= citiesArray;
             verifyBatch3();
         } else {
@@ -114,22 +187,18 @@ function batchCities(){
         }
         tally ++;
     });
-
-    // console.log(batch1 + batch2  + batch3);
     verifyBatch1();
 }
 
 function verifyBatch1() {
-    console.log("verifying batch1: " + batch1);
     batch1.forEach(city => {
         let geocoderRequest = {
             address: city
         }
-
         const geocoder = new google.maps.Geocoder();
 
         geocoder.geocode(geocoderRequest, function (array, status) {   
-            if(status === "OVER_QUERY_LIMIT"){
+            if(status === "OVER_QUERY_LIMIT"){ //USED FOR DEBUGGING
                 console.log("Over query limit: " + city);
             } else {
                 geoCodeTally ++;
@@ -145,7 +214,6 @@ function verifyBatch1() {
     
                     if (isCity) {
                         //IS IT IN THE US?
-                        //IS IN THE STATE?
                         let addressComponents = array[0]['address_components'];
                         //address_components is an array of objects with a key "short_name" that could be US for United States or a state abbreviation
                         let isInUS = false;
@@ -153,19 +221,12 @@ function verifyBatch1() {
                         addressComponents.forEach(object => {
                             if (object['short_name'] === 'US') {
                                 isInUS = true;
-                            }
-                            
+                            } 
                             object.types.forEach(type =>{
                                 if(type === "administrative_area_level_1"){
                                     state= object["short_name"];
                                 }
                             })
-
-    
-                            //CHECK IF IS IN SPECIFIED STATE
-                            // if (object['short_name'] === currentState) {
-                            //     isInState = true;
-                            // }
                         })
                         if (isInUS) {
                             verifiedCities.push(`${city} ${state}`);
@@ -173,22 +234,17 @@ function verifyBatch1() {
                         }
                     }   
                 }
-
-            }
-            
+            }   
         });
     });
-
     setTimeout (verifyBatch2, 10000);
 }
 
 function verifyBatch2(){
-    console.log("verifying batch2: " + batch2);
     batch2.forEach(city => {
         let geocoderRequest = {
             address: city
         }
-
         const geocoder = new google.maps.Geocoder();
 
         geocoder.geocode(geocoderRequest, function (array, status) {   
@@ -208,7 +264,6 @@ function verifyBatch2(){
     
                     if (isCity) {
                         //IS IT IN THE US?
-                        //IS IN THE STATE?
                         let addressComponents = array[0]['address_components'];
                         //address_components is an array of objects with a key "short_name" that could be US for United States or a state abbreviation
                         let isInUS = false;
@@ -217,18 +272,11 @@ function verifyBatch2(){
                             if (object['short_name'] === 'US') {
                                 isInUS = true;
                             }
-                            
                             object.types.forEach(type =>{
                                 if(type === "administrative_area_level_1"){
                                     state= object["short_name"];
                                 }
                             })
-
-    
-                            //CHECK IF IS IN SPECIFIED STATE
-                            // if (object['short_name'] === currentState) {
-                            //     isInState = true;
-                            // }
                         })
                         if (isInUS) {
                             verifiedCities.push(`${city} ${state}`);
@@ -236,12 +284,9 @@ function verifyBatch2(){
                         }
                     }   
                 }
-
-            }
-            
+            }  
         });
     });
-
     setTimeout (verifyBatch3, 10000);
 }
 
@@ -251,7 +296,6 @@ function verifyBatch3(){
         let geocoderRequest = {
             address: city
         }
-
         const geocoder = new google.maps.Geocoder();
 
         geocoder.geocode(geocoderRequest, function (array, status) {   
@@ -268,10 +312,8 @@ function verifyBatch3(){
                             isCity = true;
                         }
                     })
-    
                     if (isCity) {
                         //IS IT IN THE US?
-                        //IS IN THE STATE?
                         let addressComponents = array[0]['address_components'];
                         //address_components is an array of objects with a key "short_name" that could be US for United States or a state abbreviation
                         let isInUS = false;
@@ -279,19 +321,12 @@ function verifyBatch3(){
                         addressComponents.forEach(object => {
                             if (object['short_name'] === 'US') {
                                 isInUS = true;
-                            }
-                            
+                            }      
                             object.types.forEach(type =>{
                                 if(type === "administrative_area_level_1"){
                                     state= object["short_name"];
                                 }
                             })
-
-    
-                            //CHECK IF IS IN SPECIFIED STATE
-                            // if (object['short_name'] === currentState) {
-                            //     isInState = true;
-                            // }
                         })
                         if (isInUS) {
                             verifiedCities.push(`${city} ${state}`);
@@ -299,18 +334,14 @@ function verifyBatch3(){
                         }
                     }   
                 }
-
-            }
-            
+            }   
         });
     });
-
     checkLatLng()
 }
 
-
 function pushLatLng(array) {
-    clearText(document.getElementById('latlng-text'));
+    clearText(document.getElementById('latlng-text')); //USED FOR DEBUGGING
     let latitude;
     let longitude;
 
@@ -318,60 +349,22 @@ function pushLatLng(array) {
     longitude = (array[0].geometry.location.lng());
     let cityLatLng = { lat: latitude, lng: longitude };
     citiesLatLng.push(cityLatLng);
-
+    //USED FOR DEBUGGING
     document.getElementById('latlng-text').textContent += "//" + array[0]['formatted_address'] + " Latitude: " + latitude + " Longitude: " + longitude;
 }
 
+//make sure that it's had time to get lat/lng for each city
 function checkLatLng() {
-    console.log("in check LatLng")
-    //make sure that it's had time to get lat/lng for each city
-    //what about dummydata?
-    if (geoCodeTally !== citiesArray.length) {
-        console.log("FALSE: Verified Cities:" + verifiedCities);
-        console.log("CitiesLatLNG: " + citiesLatLng);
+    if (geoCodeTally !== (citiesArray.length + 1)) {
+        console.log("GeoCoder still verifying cities...");
         setTimeout(checkLatLng, 200);
-    } else if (usingDummyData){
-        // latLngCheck = true; //is this necesary?
-        // getGitHubUsers();
-
-        console.log("TRUE!!: Dummy Data Verified Cities:" + verifiedCities);
-        
-
-        //format verifieCities for URLS
-        getGitHubUsers();
     } else {
-        console.log("TRUE!!: Verified Cities:" + verifiedCities);
-        
-
-        //format verifieCities for URLS
         getGitHubUsers();
     }
 }
 
-// function formatCityForURL(array){
-//     let tempState;
-//     let tempCity;
-//     let formattedCity = array[0].formatted_address;
-//     formattedCity = formattedCity.split(','); //now is an array
-//     if (formattedCity.length === 2) {
-//         tempCity = city;
-//         tempState = currentState;
-//     } else if (formattedCity.length === 3) {
-//         tempCity = formattedCity[0];
-//         let stateArray = formattedCity[1].split(' ');
-//         tempState = stateArray[1];
-//     } else if (formattedCity.length === 4) {
-//         tempCity = formattedCity[0];
-//         let stateArray = formattedCity[2].split(' ');
-//         tempState = stateArray[1];
-//     }
-//     // let tempState= formattedCity[1].split(' ');
-//     citiesArray2.push(tempCity + " " + tempState);
-
-// }
-
 function getGitHubUsers() {
-    clearText(document.getElementById('users-text'));
+    clearText(document.getElementById('users-text')); //USED FOR DEBUGGING
     const github = new GitHub;
     verifiedCities.forEach((city, index) => {
         let cityNameForURL;
@@ -392,21 +385,19 @@ function getGitHubUsers() {
             })
 
     })
-    // citiesArray.forEach((city)=>{
-    //     gitHubNumbersArray.push([city, 'DummyNumber']);
-    // })
     checkGitHub();
 };
 
+//GET NUMBER OF GITHUB USERS FOR EACH VERIFIED CITY
 function checkGitHub() {
     if (gitHubNumbersArray.length !== verifiedCities.length) {
-        console.log("FAIL GITHUBNUMBERS")
+        console.log("Still fetching GitHub numbers...")
         setTimeout(checkGitHub, 200);
     } else {
-        console.log("githubnumbersArray: " + gitHubNumbersArray);
         getTop5(gitHubNumbersArray);
     }
 }
+
 
 function getTop5(array) {
     ///array is [[city, {lat: lng: }, #], ....]
@@ -419,7 +410,7 @@ function getTop5(array) {
                 tally++;
             }
         }
-        if (tally <= (5 - top5.length)) {
+        if (tally <= (4 - top5.length)) {
             top5.push(array[i]);
         }
     }
@@ -427,8 +418,6 @@ function getTop5(array) {
 }
 
 function getMap(cityArray) {
-
-
     map = new google.maps.Map(
         document.getElementById('map'),
         { center: citiesLatLng[0], zoom: 5 }
@@ -438,26 +427,25 @@ function getMap(cityArray) {
         createMarker(cityArray[i][1], cityArray[i][0], cityArray[i][2])
     }
 
-    // for (let i = 0; i < citiesLatLng.length; i++) {
-    //     let numberOfUsers;
-    //     for (let k = 0; k < gitHubNumbersArray.length; k++) {
-    //         if (citiesArray2[i] === gitHubNumbersArray[k][0]) {
-    //             numberOfUsers = gitHubNumbersArray[k][1];
-    //         }
-    //     }
-    //     createMarker(citiesLatLng[i], citiesArray2[i], numberOfUsers);
-    // }
-
 }
 
-
 function createMarker(latLng, cityName, numberOfUsers) {
+    //FORMAT CITY AS "CITY, STATE"
+    let cityArray= cityName.split(" ");
+    let formattedCity=cityArray[0];
+    for (let i=1; i < cityArray.length; i++){
+        if( i === cityArray.length- 1){
+            formattedCity += `, ${cityArray[i]}`;
+        } else {
+            formattedCity+= ` ${cityArray[i]}`;
+        }
+    }
 
     let marker = new google.maps.Marker({
         map: map,
         position: latLng,
         animation: google.maps.Animation.DROP,
-        title: `${numberOfUsers} GitHub Users in ${cityName}`
+        title: `${numberOfUsers} GitHub Users in ${formattedCity}`
     });
 
     marker.addListener('click', function () {
@@ -466,6 +454,4 @@ function createMarker(latLng, cityName, numberOfUsers) {
         })
         infoWindow.open(map, marker);
     });
-
-
 }
