@@ -1,9 +1,9 @@
-
+//GET HTML ELEMENTS
 const placeArea = document.getElementById('location');
 const coordinatesText = document.getElementById('coordinates-text')
 const citiesText = document.getElementById('cities-text');
-let latitude;
-let longitude;
+
+//TO STORE INFO ABOUT CHOSEN STATE AND NEARBY CITIES
 const stateBB = {
     north: 0,
     south: 0,
@@ -12,6 +12,7 @@ const stateBB = {
 }
 let currentState;
 let citiesArray = [];
+let usingDummyData = false;
 
 //Cities have to be verified in batches becuase of Query limit in Google Geocoder
 let batch1=[];
@@ -21,25 +22,17 @@ let batch3=[];
 let verifiedCities=[];
 let geoCodeTally=0;
 const citiesLatLng = [];
-const citiesArray2 = []; //Because the cities get processed out of order in GeoCode
 const gitHubNumbersArray = [];
-// const latLngArray = []; dont think I need this
+
 //FOR GOOGLE MAPS API
 let map;
 let service;
 let infoWindow;
-//Checks must be true for the next function to fire
-// let nearbyCitiesCheck = false;
-// let latLngCheck = false;
-// let gitHubCheck = false;
-let usingDummyData = false;
+
+
 
 document.getElementById('get-map').addEventListener('click', getStateBBCoordinates);
-document.getElementById("get-bb").addEventListener('click', getStateBBCoordinates);
-document.getElementById('get-nearby-cities').addEventListener('click', getNearbyCities);
-// document.getElementById('get-latlng').addEventListener('click', getLatLng);
-// document.getElementById('get-map').addEventListener('click', getMap);
-document.getElementById('get-gh-users').addEventListener('click', getGitHubUsers);
+
 
 
 //Change user input to Boundary Box coordinates readable by GeoNames.org
@@ -98,7 +91,7 @@ function checkNearbyCities() {
     } else {
         // nearbyCitiesCheck = true;
         if (usingDummyData) {
-            verifiedCities=citiesArray;
+            // verifiedCities=citiesArray;
             batch3= citiesArray;
             verifyBatch3();
         } else {
@@ -318,6 +311,8 @@ function verifyBatch3(){
 
 function pushLatLng(array) {
     clearText(document.getElementById('latlng-text'));
+    let latitude;
+    let longitude;
 
     latitude = (array[0].geometry.location.lat());
     longitude = (array[0].geometry.location.lng());
@@ -340,15 +335,13 @@ function checkLatLng() {
         // getGitHubUsers();
 
         console.log("TRUE!!: Dummy Data Verified Cities:" + verifiedCities);
-        // console.log("CitiesLatLNG: " + citiesLatLng);
-        // console.log("citeisArray2: " + citiesArray2);
+        
 
         //format verifieCities for URLS
         getGitHubUsers();
     } else {
         console.log("TRUE!!: Verified Cities:" + verifiedCities);
-        // console.log("CitiesLatLNG: " + citiesLatLng);
-        // console.log("citeisArray2: " + citiesArray2);
+        
 
         //format verifieCities for URLS
         getGitHubUsers();
