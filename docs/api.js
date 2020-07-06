@@ -1,42 +1,39 @@
-// TOKEN AND SECRET NO LONGER WORK
+
+class GitHub {
+    constructor(){
+       //user token goes here
+    } //
+
+    // https://api.github.com/users/${user}?client_id=${this.client_id}&client_secret=${this.client_secret}`
+
+    async getUsersInLocation(city){
+        const locationResponse= await fetch(`https://api.github.com/search/users?q=location%3A"${city}"`, {
+            headers: new Headers ({
+                Authorization: `token ${this.user_token}`,
+                Accept: `application/vnd.github.v3+json` 
+            })
+        });
 
 
-// class GitHub {
-//     constructor(){
-//         this.client_id= 'Iv1.a8d901da9a22e78e';
-//         this.client_secret='4f7b41088963d747c483237cc7e9b0744d649a70';
-//         this.user_token='274aeb5735c53a7149d2339ddf837aafde5c9418';
-//     } //
-
-//     // https://api.github.com/users/${user}?client_id=${this.client_id}&client_secret=${this.client_secret}`
-
-//     async getUsersInLocation(city){
-//         const locationResponse= await fetch(`https://api.github.com/search/users?q=location%3A"${city}"`, {
-//             headers: new Headers ({
-//                 Authorization: `token ${this.user_token}` 
-//             })
-//         });
-
-
-//         const location= await locationResponse.json();
+        const location= await locationResponse.json();
         
-//         return {
-//             location  //location.total_count
-//         }
-//     }
-// }
+        return {
+            location  //location.total_count
+        }
+    }
+}
 
 class GeoNames {
     constructor(){
         this.username='ljohnston10'
     }
 
-    async getNearbyCities(city){
-        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${city.north}&south=${city.south}&west=${city.west}&east=${city.east}&maxRows=10&username=ljohnston10`);
+    async getNearbyCities(state){
+        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${state.north}&south=${state.south}&west=${state.west}&east=${state.east}&maxRows=30&username=ljohnston10`);
 
         const cities= await citiesResponse.json(); 
 
-        return cities;
+        return cities; //pretty much in order of greatest population to least
     }
 }
 
