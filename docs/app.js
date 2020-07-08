@@ -368,8 +368,6 @@ function checkLatLng() {
 }
 
 function deleteCityDuplicates() {
-    console.log(verifiedCities);
-    console.log(citiesLatLng);
     verifiedCities.forEach((city, index) => {
         for (let i = index + 1; i < verifiedCities.length; i++) {
             if (verifiedCities[i] === city) {
@@ -405,6 +403,7 @@ function getGitHubUsers() {
             })
 
     })
+    console.log(gitHubNumbersArray);
     checkGitHub();
 };
 
@@ -422,16 +421,27 @@ function checkGitHub() {
 function getTop5(array) {
     ///array is [[city, {lat: lng: }, #], ....]
     let top5 = [];
-    for (let i = 0; i < array.length; i++) {
-        let tally = 0;
-
-        for (let k = i + 1; k < array.length; k++) {
-            if (array[i][2] < array[k][2]) {
-                tally++;
-            }
+    //make sure chosen city is displayed
+    let chosenIndex; 
+    array.forEach((cityArray, index) =>{
+        if(cityArray[0] === chosenCity + " " + chosenState){
+            top5.push(cityArray);
+            chosenIndex= index;
         }
-        if (tally <= (4 - top5.length)) {
-            top5.push(array[i]);
+    })
+
+    for (let i = 0; i < array.length; i++) {
+        //AVOID COUNTING CHOSEN CITY AGAIN
+        if(i !== chosenIndex){
+            let tally = 0;
+            for (let k = i + 1; k < array.length; k++) {
+                if (array[i][2] < array[k][2]) {
+                    tally++;
+                }
+            }
+            if (tally <= (4 - top5.length)) {
+                top5.push(array[i]);
+            }
         }
     }
     getMap(top5);
@@ -441,7 +451,7 @@ function getMap(cityArray) {
     console.log("Top 5: " + cityArray);
     map = new google.maps.Map(
         document.getElementById('map'),
-        { center: citiesLatLng[0], zoom: 5 }
+        { center: cityArray[0][1], zoom: 6 }
     );
 
     for (let i = 0; i < cityArray.length; i++) {
