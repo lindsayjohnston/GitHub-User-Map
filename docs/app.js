@@ -1,7 +1,3 @@
-//GET HTML ELEMENTS
-const placeArea = document.getElementById('location');
-const coordinatesText = document.getElementById('coordinates-text')
-const citiesText = document.getElementById('cities-text');
 
 const cityBB = {
     north: 0,
@@ -77,10 +73,6 @@ function reloadData() {
     citiesLatLng = [];
     gitHubNumbersArray = [];
     chosenCity = '';
-    // clearText(coordinatesText);
-    // clearText(citiesText);
-    // clearText(document.getElementById('latlng-text'));
-    // clearText(document.getElementById('users-text'));
     document.getElementById('map').innerHTML='';
     document.getElementById('message').innerHTML='';
 }
@@ -128,24 +120,7 @@ function getCityBBCoordinates() {
 
     getNearbyCities(cityBB);
 }
-// ["WA","Washington",-124.763068,45.543541,-116.915989,49.002494]
-// function getStateBBCoordinates() {
-//     clearText(document.getElementById('coordinates-text'));
-//     reloadData();
-//     for (let i = 0; i < states.length; i++) {
-//         if (placeArea.value === states[i][0]) {
-//             currentState = states[i][0];
-//             stateBB.north = states[i][5];
-//             stateBB.south = states[i][3];
-//             stateBB.east = states[i][4];
-//             stateBB.west = states[i][2];
-//             break;
-//         }
-//     }
-//     document.getElementById('coordinates-text').textContent += placeArea.value + " " + JSON.stringify(stateBB);
 
-//     getNearbyCities();
-// }
 
 function getNearbyCities(bb) {
     // clearText(citiesText); //USED FOR DEBUGGING
@@ -377,14 +352,10 @@ function verifyBatch3() {
 }
 
 function pushLatLng(array) {
-    // clearText(document.getElementById('latlng-text')); //USED FOR DEBUGGING
-
     let latitude = (array[0].geometry.location.lat());
     let longitude = (array[0].geometry.location.lng());
     let cityLatLng = { lat: latitude, lng: longitude };
     citiesLatLng.push(cityLatLng);
-    //USED FOR DEBUGGING
-    document.getElementById('latlng-text').textContent += "//" + array[0]['formatted_address'] + " Latitude: " + latitude + " Longitude: " + longitude;
 }
 
 //make sure that it's had time to get lat/lng for each city
@@ -414,7 +385,6 @@ function deleteCityDuplicates() {
 function getGitHubUsers() {
     addCheck(document.getElementById('message'));
     addSpinner(document.getElementById('message'), "Getting GitHub Users");
-    // clearText(document.getElementById('users-text')); //USED FOR DEBUGGING
     const github = new GitHub;
     verifiedCities.forEach((city, index) => {
         let cityNameForURL;
@@ -431,7 +401,6 @@ function getGitHubUsers() {
         github.getUsersInLocation(cityNameForURL)
             .then(data => {
                 gitHubNumbersArray.push([city, citiesLatLng[index], data.location.total_count]);
-                document.getElementById('users-text').innerText += city + ": " + data.location.total_count + "// ";
             })
 
     })
@@ -481,7 +450,6 @@ function getTop5(array) {
 }
 
 function getMap(cityArray) {
-    console.log("Top 5: " + cityArray);
     map = new google.maps.Map(
         document.getElementById('map'),
         { center: cityArray[0][1], zoom: 6 }
@@ -495,7 +463,6 @@ function getMap(cityArray) {
 
 function createMarker(latLng, cityName, numberOfUsers) {
     //FORMAT CITY AS "CITY, STATE"
-
     let cityArray = cityName.split(" ");
     let formattedCity = cityArray[0];
     for (let i = 1; i < cityArray.length; i++) {
