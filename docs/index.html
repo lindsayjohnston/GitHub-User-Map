@@ -2,74 +2,55 @@
 <html>
 
 <head>
-  
   <link rel="stylesheet" href="styles.css">
   <title>GitHub User Map</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 </head>
 
 <body>
-  <div class="container ">
+  <div class="container">
     <h1>GitHub User Map</h1>
     <p>Find cities with the largest number of GitHub users near a city of your choice...</p>
   </div>
   <div id="input-div" class="container">
     <input type="text" id="city-input" placeholder="Enter US City">
-    <label for="state" class="hidden">Select a State:</label>
-    <select name="state" class="hidden" id="location">
-        <option value="AL">Alabama</option>
-        <option value="AK">Alaska</option>
-        <option value="AZ">Arizona</option>
-        <option value="AR">Arkansas</option>
-        <option value="CA">California</option>
-        <option value="CO">Colorado</option>
-        <option value="CT">Connecticut</option>
-        <option value="DE">Delaware</option>
-        <option value="DC">District Of Columbia</option>
-        <option value="FL">Florida</option>
-        <option value="GA">Georgia</option>
-        <option value="HI">Hawaii</option>
-        <option value="ID">Idaho</option>
-        <option value="IL">Illinois</option>
-        <option value="IN">Indiana</option>
-        <option value="IA">Iowa</option>
-        <option value="KS">Kansas</option>
-        <option value="KY">Kentucky</option>
-        <option value="LA">Louisiana</option>
-        <option value="ME">Maine</option>
-        <option value="MD">Maryland</option>
-        <option value="MA">Massachusetts</option>
-        <option value="MI">Michigan</option>
-        <option value="MN">Minnesota</option>
-        <option value="MS">Mississippi</option>
-        <option value="MO">Missouri</option>
-        <option value="MT">Montana</option>
-        <option value="NE">Nebraska</option>
-        <option value="NV">Nevada</option>
-        <option value="NH">New Hampshire</option>
-        <option value="NJ">New Jersey</option>
-        <option value="NM">New Mexico</option>
-        <option value="NY">New York</option>
-        <option value="NC">North Carolina</option>
-        <option value="ND">North Dakota</option>
-        <option value="OH">Ohio</option>
-        <option value="OK">Oklahoma</option>
-        <option value="OR">Oregon</option>
-        <option value="PA">Pennsylvania</option>
-        <option value="RI">Rhode Island</option>
-        <option value="SC">South Carolina</option>
-        <option value="SD">South Dakota</option>
-        <option value="TN">Tennessee</option>
-        <option value="TX">Texas</option>
-        <option value="UT">Utah</option>
-        <option value="VT">Vermont</option>
-        <option value="VA">Virginia</option>
-        <option value="WA">Washington</option>
-        <option value="WV">West Virginia</option>
-        <option value="WI">Wisconsin</option>
-        <option value="WY">Wyoming</option>
-    </select>
-  </div>
+
+    <!-- ALERTS FOR WHEN STEPS ARE COMPLETING -->
+    <div id="alerts">
+      <div id="fetching-cities" class="hidden">
+        <p>Fetching nearby cities from GeoNames Server. 
+          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+          <i class="far fa-check-circle"></i>
+        </p>
+      </div>
+      <div id="verifying-cities" class="hidden">
+        <p>Verifying nearby cities with Google GeoCoder.
+          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+          <i class="far fa-check-circle"></i>
+        </p>
+        <p id="batch-1" class="hidden">Batch 1 Verified
+          <i class="far fa-check-circle"></i>
+        </p>
+        <p id="batch-2" class="hidden">Batch 2 Verified
+          <i class="far fa-check-circle"></i>
+        </p>
+        <p id="batch-3" class="hidden">Batch 3 Verified
+          <i class="far fa-check-circle"></i>
+        </p>
+      </div>
+      <div id="fetching-github" class="hidden">
+        <p class="hidden">Fetching GitHub Info.
+          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+          <i class="far fa-check-circle"></i>
+        </p>
+      </div>
+    </div>
+    
+
+
+    
+    <!---THIS IS ONLY FOR DEBUGGING TO WATCH PROGRESS-->
   <div id='bb-div' class="container hidden">
     <h2>Boundary Box Coordinates for State</h2>
     <button id="get-bb">Get BB Coordinates</button>
@@ -89,9 +70,16 @@
     <h2>GitHub Users In Cities:</h2>
     <div id="users-text">Users:</div>
   </div>
+ <!-- END OF DEBUGGING AREA ^^^^ -->
+
+
   <div id='map-div' class="container">
     <button id="get-map">Get Map of Users</button>
+    <div id='spinner' class="hidden">
+      <i class="fa fa-spinner fa-pulse fa-5x" aria-hidden="true"></i>
+     </div>
     <div id="map"></div>
+    
   </div>
 
 
@@ -99,7 +87,7 @@
   <!-- <script id="location-script"></script> -->
   <!-- <script id="map-script"></script> -->
   <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTpoS8vDEyT-e0D0rDKBO1VOrs0EiVYyo&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpbnLBFN9eV5nQnDfodfbiDtXJKSvXoY&libraries=places"></script>
   <script id="userlist-script" src="api.js"></script>
   <script src='state-info.js'></script>
   <script src="app.js"></script>
