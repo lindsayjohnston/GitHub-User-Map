@@ -41,10 +41,29 @@ function guessCity() {
     };
     let autocomplete = new google.maps.places.Autocomplete(cityInput, options);
 }
-//THIS IS ONLY USED FOR DEBUGGING 
+//THIS IS ONLY USED FOR DEBUGGING DIVS (CURRENTLY HIDDEN)
 function clearText(area) {
     area.textContent = '';
 }
+
+function unhideElement(element){
+    element.classList.remove('hidden');
+}
+
+function hideElement(element){
+    element.classList.add('hidden');
+}
+
+function addSpinner(element, message){
+    element.innerHTML += `${message} <i id="spinner" class="fa fa-spinner fa-pulse" aria-hidden="true"></i>`
+}
+
+function addCheck(element){
+    document.getElementById('spinner').remove();
+    element.innerHTML += '<i class="far fa-check-circle"></i><br>';
+}
+
+
 
 //RELOAD ALL INFO 
 function reloadData() {
@@ -58,14 +77,17 @@ function reloadData() {
     citiesLatLng = [];
     gitHubNumbersArray = [];
     chosenCity = '';
-    clearText(coordinatesText);
-    clearText(citiesText);
-    clearText(document.getElementById('latlng-text'));
-    clearText(document.getElementById('users-text'));
+    // clearText(coordinatesText);
+    // clearText(citiesText);
+    // clearText(document.getElementById('latlng-text'));
+    // clearText(document.getElementById('users-text'));
+    document.getElementById('map').innerHTML='';
 }
 
 function getChosenLatLng() {
     reloadData();
+     //START FETCHING NEARBY CITIES SPINNER
+    addSpinner(document.getElementById('message'), "Fetching coordinates of chosen city");
     let input = document.getElementById('city-input').value;
     let inputArray = input.split(', ');
     chosenCity = inputArray[0];
@@ -89,6 +111,7 @@ function checkChosenLatLng() {
     if (citiesLatLng.length === 0) {
         setTimeout(checkChosenLatLng, 200);
     } else {
+        addCheck(document.getElementById('message'));
         getCityBBCoordinates();
     }
 }
@@ -124,8 +147,8 @@ function getCityBBCoordinates() {
 // }
 
 function getNearbyCities(bb) {
-    clearText(citiesText); //USED FOR DEBUGGING
-
+    // clearText(citiesText); //USED FOR DEBUGGING
+    addSpinner(document.getElementById('message'), "Fetching nearby cities.");
     const geoNames = new GeoNames;
     geoNames.getNearbyCities(bb)
         .then(data => {
@@ -133,6 +156,7 @@ function getNearbyCities(bb) {
                 alert('There was a problem with the GeoNames server and we will use dummy data surrounding Seattle, WA to run the App. Sorry about that!');
                 citiesArray = ["Seattle WA", "Kennewick WA", "Tacoma WA", 'Yakima WA', 'Richland WA', "Walla Walla WA", 'Yakima WA'];
                 usingDummyData = true;
+                document.getElementById('city-input').value= "Seattle, WA, USA"
                 geoCodeTally = 0;
                 chosenCity = 'Seattle';
                 chosenState = 'WA';
@@ -176,6 +200,7 @@ function checkNearbyCities() {
     if (citiesArray.length !== 30 && !usingDummyData) {
         setTimeout(checkNearbyCities, 200);
     } else {
+        addCheck(document.getElementById('message'));
         if (usingDummyData) {
             batch3 = citiesArray;
             verifyBatch3();
@@ -203,6 +228,7 @@ function batchCities() {
 }
 
 function verifyBatch1() {
+    addSpinner(document.getElementById('message'), "Verifying first batch of cities");
     batch1.forEach(city => {
         let geocoderRequest = {
             address: city
@@ -251,6 +277,8 @@ function verifyBatch1() {
 }
 
 function verifyBatch2() {
+    addCheck(document.getElementById('message'));
+    addSpinner(document.getElementById('message'), "Verifying second batch of cities");
     batch2.forEach(city => {
         let geocoderRequest = {
             address: city
@@ -299,7 +327,8 @@ function verifyBatch2() {
 }
 
 function verifyBatch3() {
-    console.log("verifying batch3: " + batch3);
+    addCheck(document.getElementById('message'));
+    addSpinner(document.getElementById('message'), "Verifying third batch of cities");
     batch3.forEach(city => {
         let geocoderRequest = {
             address: city
@@ -347,7 +376,7 @@ function verifyBatch3() {
 }
 
 function pushLatLng(array) {
-    clearText(document.getElementById('latlng-text')); //USED FOR DEBUGGING
+    // clearText(document.getElementById('latlng-text')); //USED FOR DEBUGGING
 
     let latitude = (array[0].geometry.location.lat());
     let longitude = (array[0].geometry.location.lng());
@@ -382,7 +411,9 @@ function deleteCityDuplicates() {
 }
 
 function getGitHubUsers() {
-    clearText(document.getElementById('users-text')); //USED FOR DEBUGGING
+    addCheck(document.getElementById('message'));
+    addSpinner(document.getElementById('message'), "Getting GitHub Users");
+    // clearText(document.getElementById('users-text')); //USED FOR DEBUGGING
     const github = new GitHub;
     verifiedCities.forEach((city, index) => {
         let cityNameForURL;
@@ -413,6 +444,7 @@ function checkGitHub() {
         console.log("Still fetching GitHub numbers...")
         setTimeout(checkGitHub, 200);
     } else {
+        addCheck(document.getElementById('message'));
         getTop5(gitHubNumbersArray);
     }
 }

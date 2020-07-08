@@ -24,9 +24,9 @@ body{
   margin-bottom: 5px;
 }
 
-/* .hidden{
+.hidden{
   display: none;
-}  */
+} 
 
 #map {
   height: 500px;
