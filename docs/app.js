@@ -10,11 +10,6 @@ let chosenState;
 let citiesArray = [];
 let usingDummyData = false;
 
-//Cities have to be verified in batches becuase of Query limit in Google Geocoder
-let batch1 = [];
-let batch2 = [];
-let batch3 = [];
-
 let verifiedCities = [];
 let geoCodeTally = 0;
 let citiesLatLng = [];
@@ -29,6 +24,7 @@ let infoWindow;
 document.getElementById('get-map').addEventListener('click', getChosenLatLng);
 document.getElementById('city-input').addEventListener('keydown', guessCity);
 
+//AUTOCOMPLETE CITY
 function guessCity() {
     let cityInput = document.getElementById('city-input');
     let options = {
@@ -37,17 +33,10 @@ function guessCity() {
     };
     let autocomplete = new google.maps.places.Autocomplete(cityInput, options);
 }
-//THIS IS ONLY USED FOR DEBUGGING DIVS (CURRENTLY HIDDEN)
+
+//CHANGE HTML
 function clearText(area) {
     area.textContent = '';
-}
-
-function unhideElement(element){
-    element.classList.remove('hidden');
-}
-
-function hideElement(element){
-    element.classList.add('hidden');
 }
 
 function addSpinner(element, message){
@@ -59,15 +48,10 @@ function addCheck(element){
     element.innerHTML += '<i class="far fa-check-circle"></i><br>';
 }
 
-
-
-//RELOAD ALL INFO 
+//RELOAD ALL INFO WHEN BUTTON CLICKED
 function reloadData() {
     citiesArray = [];
     usingDummyData = false;
-    batch1 = [];
-    batch2 = [];
-    batch3 = [];
     verifiedCities = [];
     geoCodeTally = 0;
     citiesLatLng = [];
@@ -80,7 +64,7 @@ function reloadData() {
 function getChosenLatLng() {
     reloadData();
      //START FETCHING NEARBY CITIES SPINNER
-    addSpinner(document.getElementById('message'), "Fetching coordinates of chosen city");
+    addSpinner(document.getElementById('message'), "Fetching coordinates of chosen city with Google Geocoder API.");
     let input = document.getElementById('city-input').value;
     let inputArray = input.split(', ');
     chosenCity = inputArray[0];
@@ -109,7 +93,6 @@ function checkChosenLatLng() {
     }
 }
 
-//I THINK I HAVE MY UNDERSTANDING OF LAT/LNG SWITCHED BUT IT WORKS
 function getCityBBCoordinates() {
     let latitude = citiesLatLng[0]['lat'];
     let longitude = citiesLatLng[0]['lng'];
@@ -121,10 +104,8 @@ function getCityBBCoordinates() {
     getNearbyCities(cityBB);
 }
 
-
 function getNearbyCities(bb) {
-    // clearText(citiesText); //USED FOR DEBUGGING
-    addSpinner(document.getElementById('message'), "Fetching nearby cities.");
+    addSpinner(document.getElementById('message'), "Fetching nearby cities with GeoNames API.");
     const geoNames = new GeoNames;
     geoNames.getNearbyCities(bb)
         .then(data => {
@@ -172,140 +153,18 @@ function getNearbyCities(bb) {
 }
 
 function checkNearbyCities() {
-    //citiesArray.length should match number of rows requested from GeoNames API
-    if (citiesArray.length !== 30 && !usingDummyData) {
+    //citiesArray.length should match number of rows requested from GeoNames API + 1 for chosen City
+    if (citiesArray.length !== 10 && !usingDummyData) {
         setTimeout(checkNearbyCities, 200);
     } else {
         addCheck(document.getElementById('message'));
-        if (usingDummyData) {
-            batch3 = citiesArray;
-            verifyBatch3();
-        } else {
-            batchCities();
-        }
+        verifyCities();
     }
 }
 
-//Cities need to be verified in batches to get around Query limit from Google GeoCode API
-function batchCities() {
-    let tally = 0;
+function verifyCities() {
+    addSpinner(document.getElementById('message'), "Verifying cities with Google Geocoder API.");
     citiesArray.forEach(city => {
-        if (tally >= 0 && tally < 10) {
-            batch1.push(city);
-        }
-        else if (tally >= 10 && tally < 20) {
-            batch2.push(city);
-        } else {
-            batch3.push(city);
-        }
-        tally++;
-    });
-    verifyBatch1();
-}
-
-function verifyBatch1() {
-    addSpinner(document.getElementById('message'), "Verifying first batch of cities");
-    batch1.forEach(city => {
-        let geocoderRequest = {
-            address: city
-        }
-        const geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode(geocoderRequest, function (array, status) {
-            if (status === "OVER_QUERY_LIMIT") { //USED FOR DEBUGGING
-                console.log("Over query limit: " + city);
-            } else {
-                geoCodeTally++;
-                if (array) {
-                    //CHECK IF IT'S A CITY
-                    let placeTypes = array[0].types;
-                    let isCity = false;
-                    placeTypes.forEach(function (place) {
-                        if (place === 'locality') {
-                            isCity = true;
-                        }
-                    })
-
-                    if (isCity) {
-                        //GET CITY/STATE NAME
-                        let state;
-                        let city;
-                        let addressComponents = array[0]['address_components'];
-                        addressComponents.forEach(component => {
-                            component.types.forEach(type => {
-                                if (type === 'locality') {
-                                    city = component['long_name'];
-                                }
-                                if (type === 'administrative_area_level_1') {
-                                    state = component['short_name'];
-                                }
-                            })
-                        })
-
-                        verifiedCities.push(`${city} ${state}`);
-                        pushLatLng(array);
-                    }
-                }
-            }
-        });
-    });
-    setTimeout(verifyBatch2, 10000);
-}
-
-function verifyBatch2() {
-    addCheck(document.getElementById('message'));
-    addSpinner(document.getElementById('message'), "Verifying second batch of cities");
-    batch2.forEach(city => {
-        let geocoderRequest = {
-            address: city
-        }
-        const geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode(geocoderRequest, function (array, status) {
-            if (status === "OVER_QUERY_LIMIT") {
-                console.log("Over query limit: " + city);
-            } else {
-                geoCodeTally++;
-                if (array) {
-                    //CHECK IF IT'S A CITY
-                    let placeTypes = array[0].types;
-                    let isCity = false;
-                    placeTypes.forEach(function (place) {
-                        if (place === 'locality') {
-                            isCity = true;
-                        }
-                    })
-
-                    if (isCity) {
-                        //GET CITY/STATE NAME
-                        let state;
-                        let city;
-                        let addressComponents = array[0]['address_components'];
-                        addressComponents.forEach(component => {
-                            component.types.forEach(type => {
-                                if (type === 'locality') {
-                                    city = component['long_name'];
-                                }
-                                if (type === 'administrative_area_level_1') {
-                                    state = component['short_name'];
-                                }
-                            })
-                        })
-
-                        verifiedCities.push(`${city} ${state}`);
-                        pushLatLng(array);
-                    }
-                }
-            }
-        });
-    });
-    setTimeout(verifyBatch3, 10000);
-}
-
-function verifyBatch3() {
-    addCheck(document.getElementById('message'));
-    addSpinner(document.getElementById('message'), "Verifying third batch of cities");
-    batch3.forEach(city => {
         let geocoderRequest = {
             address: city
         }
@@ -340,7 +199,6 @@ function verifyBatch3() {
                                 }
                             })
                         })
-
                         verifiedCities.push(`${city} ${state}`);
                         pushLatLng(array);
                     }
@@ -358,16 +216,16 @@ function pushLatLng(array) {
     citiesLatLng.push(cityLatLng);
 }
 
-//make sure that it's had time to get lat/lng for each city
+//MAKE SURE APP HAS HAD TIME TO GET RESPONSES FROM LAT/LNG API
 function checkLatLng() {
     if (geoCodeTally !== (citiesArray.length)) {
-        console.log("GeoCoder still verifying cities...");
         setTimeout(checkLatLng, 200);
     } else {
         deleteCityDuplicates();
     }
 }
 
+//ACCOUNT FOR DISCREPANCIES BETWEEN DIFFERENT APIS IN REGARDS TO CITY NAMING
 function deleteCityDuplicates() {
     verifiedCities.forEach((city, index) => {
         for (let i = index + 1; i < verifiedCities.length; i++) {
@@ -376,15 +234,13 @@ function deleteCityDuplicates() {
                 citiesLatLng.splice(i, 1);
             }
         }
-    })
-    console.log(verifiedCities);
-    console.log(citiesLatLng);    
+    })   
     getGitHubUsers();
 }
 
 function getGitHubUsers() {
     addCheck(document.getElementById('message'));
-    addSpinner(document.getElementById('message'), "Getting GitHub Users");
+    addSpinner(document.getElementById('message'), "Fetching numbers of GitHub Users with GitHub API.");
     const github = new GitHub;
     verifiedCities.forEach((city, index) => {
         let cityNameForURL;
@@ -404,14 +260,12 @@ function getGitHubUsers() {
             })
 
     })
-    console.log(gitHubNumbersArray);
     checkGitHub();
 };
 
 //GET NUMBER OF GITHUB USERS FOR EACH VERIFIED CITY
 function checkGitHub() {
     if (gitHubNumbersArray.length !== verifiedCities.length) {
-        console.log("Still fetching GitHub numbers...")
         setTimeout(checkGitHub, 200);
     } else {
         addCheck(document.getElementById('message'));
@@ -419,7 +273,7 @@ function checkGitHub() {
     }
 }
 
-
+//FIND TOP 5 CITIES BY HIGHEST NUMBER OF GITHUB USERS
 function getTop5(array) {
     ///array is [[city, {lat: lng: }, #], ....]
     let top5 = [];
@@ -449,7 +303,11 @@ function getTop5(array) {
     getMap(top5);
 }
 
+//GENERATE GOOGLE MAP
 function getMap(cityArray) {
+    let button= document.getElementById('map');
+    button.insertAdjacentHTML('beforebegin', `<p id="marker-explain"> Click a marker to see the number of GitHub users.</p>`)
+    document.getElementById('map-div').style.backgroundColor= 'white';
     map = new google.maps.Map(
         document.getElementById('map'),
         { center: cityArray[0][1], zoom: 6 }
@@ -461,6 +319,7 @@ function getMap(cityArray) {
 
 }
 
+//GENERATE CLICKABLE MARKERS FOR MAP
 function createMarker(latLng, cityName, numberOfUsers) {
     //FORMAT CITY AS "CITY, STATE"
     let cityArray = cityName.split(" ");
