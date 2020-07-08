@@ -82,6 +82,7 @@ function reloadData() {
     // clearText(document.getElementById('latlng-text'));
     // clearText(document.getElementById('users-text'));
     document.getElementById('map').innerHTML='';
+    document.getElementById('message').innerHTML='';
 }
 
 function getChosenLatLng() {

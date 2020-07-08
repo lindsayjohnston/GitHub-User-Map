@@ -18,39 +18,13 @@
 
     <!-- ALERTS FOR WHEN STEPS ARE COMPLETING -->
     <div id="alerts">
-      <div id="fetching-cities" class="hidden">
-        <p>Fetching nearby cities from GeoNames Server. 
-          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-          <i class="far fa-check-circle"></i>
-        </p>
-      </div>
-      <div id="verifying-cities" class="hidden">
-        <p>Verifying nearby cities with Google GeoCoder.
-          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-          <i class="far fa-check-circle"></i>
-        </p>
-        <p id="batch-1" class="hidden">Batch 1 Verified
-          <i class="far fa-check-circle"></i>
-        </p>
-        <p id="batch-2" class="hidden">Batch 2 Verified
-          <i class="far fa-check-circle"></i>
-        </p>
-        <p id="batch-3" class="hidden">Batch 3 Verified
-          <i class="far fa-check-circle"></i>
-        </p>
-      </div>
-      <div id="fetching-github" class="hidden">
-        <p class="hidden">Fetching GitHub Info.
-          <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-          <i class="far fa-check-circle"></i>
-        </p>
-      </div>
+      <div id="message"></div>
     </div>
     
 
 
     
-    <!---THIS IS ONLY FOR DEBUGGING TO WATCH PROGRESS-->
+    <!-- -THIS IS ONLY FOR DEBUGGING TO WATCH PROGRESS -->
   <div id='bb-div' class="container hidden">
     <h2>Boundary Box Coordinates for State</h2>
     <button id="get-bb">Get BB Coordinates</button>
@@ -75,9 +49,6 @@
 
   <div id='map-div' class="container">
     <button id="get-map">Get Map of Users</button>
-    <div id='spinner' class="hidden">
-      <i class="fa fa-spinner fa-pulse fa-5x" aria-hidden="true"></i>
-     </div>
     <div id="map"></div>
     
   </div>
@@ -87,7 +58,7 @@
   <!-- <script id="location-script"></script> -->
   <!-- <script id="map-script"></script> -->
   <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpbnLBFN9eV5nQnDfodfbiDtXJKSvXoY&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"></script>
   <script id="userlist-script" src="api.js"></script>
   <script src='state-info.js'></script>
   <script src="app.js"></script>
