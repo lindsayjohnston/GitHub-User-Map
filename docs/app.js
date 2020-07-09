@@ -39,11 +39,25 @@ function clearText(area) {
     area.textContent = '';
 }
 
-function addSpinner(element, message){
+function addError(element, message) {
+    element.style.padding= '5px';
+    element.style.backgroundColor= 'rgb(236, 94, 94)';
+    element.style.width='600px';
+    element.innerHTML += `${message}`;
+}
+
+function clearError(element){
+    element.style.backgroundColor= 'white';
+}
+
+function addSpinner(element, message) {
+    element.style.backgroundColor= 'white';
+    element.style.width='600px';
+    element.style.padding="5px";
     element.innerHTML += `${message} <i id="spinner" class="fa fa-spinner fa-pulse" aria-hidden="true"></i>`
 }
 
-function addCheck(element){
+function addCheck(element) {
     document.getElementById('spinner').remove();
     element.innerHTML += '<i class="far fa-check-circle"></i><br>';
 }
@@ -57,30 +71,40 @@ function reloadData() {
     citiesLatLng = [];
     gitHubNumbersArray = [];
     chosenCity = '';
-    document.getElementById('map').innerHTML='';
-    document.getElementById('message').innerHTML='';
+    document.getElementById('map').innerHTML = '';
+    document.getElementById('message').innerHTML = '';
+    document.getElementById('marker-explanation').textContent='';
+    document.getElementById('map-div').style.display= 'none';
 }
 
 function getChosenLatLng() {
     reloadData();
-     //START FETCHING NEARBY CITIES SPINNER
-    addSpinner(document.getElementById('message'), "Fetching coordinates of chosen city with Google Geocoder API.");
     let input = document.getElementById('city-input').value;
-    let inputArray = input.split(', ');
-    chosenCity = inputArray[0];
-    chosenState = inputArray[1];
-    let geocoderRequest = {
-        address: input
+    if (input === '') {
+        addError(document.getElementById('message'), 'Please enter a valid city!');
+    } else {
+        //START FETCHING NEARBY CITIES SPINNER
+        addSpinner(document.getElementById('message'), "Fetching coordinates of chosen city with Google Geocoder API.");
+        clearError(document.getElementById('message'));
+        let inputArray = input.split(', ');
+        chosenCity = inputArray[0];
+        chosenState = inputArray[1];
+        let geocoderRequest = {
+            address: input
+        }
+
+        const geocoder1 = new google.maps.Geocoder();
+        geocoder1.geocode(geocoderRequest, function (array, status) {
+            citiesArray.push(chosenCity + " " + chosenState);
+            verifiedCities.push(chosenCity + " " + chosenState);
+            pushLatLng(array);
+        })
+
+        checkChosenLatLng();
+
     }
 
-    const geocoder1 = new google.maps.Geocoder();
-    geocoder1.geocode(geocoderRequest, function (array, status) {
-        citiesArray.push(chosenCity + " " + chosenState);
-        verifiedCities.push(chosenCity + " " + chosenState);
-        pushLatLng(array);
-    })
 
-    checkChosenLatLng();
 }
 
 function checkChosenLatLng() {
@@ -110,18 +134,15 @@ function getNearbyCities(bb) {
     geoNames.getNearbyCities(bb)
         .then(data => {
             if (data.status !== undefined) {
-                alert('There was a problem with the GeoNames server and we will use dummy data surrounding Seattle, WA to run the App. Sorry about that!');
-                citiesArray = ["Seattle WA", "Kennewick WA", "Tacoma WA", 'Yakima WA', 'Richland WA', "Walla Walla WA", 'Yakima WA'];
+                alert('There was a problem with the GeoNames server and we will use dummy data surrounding Yakima, WA to run the App. Sorry about that!');
+                citiesArray = ["Yakima WA", "Kennewick WA", "Tacoma WA", 'Seattle WA', 'Richland WA', "Walla Walla WA", 'Yakima WA'];
                 usingDummyData = true;
-                document.getElementById('city-input').value= "Seattle, WA, USA"
+                document.getElementById('city-input').value = "Seattle, WA, USA"
                 geoCodeTally = 0;
                 chosenCity = 'Seattle';
                 chosenState = 'WA';
                 citiesLatLng = [];
                 verifiedCities = [];
-                citiesArray.forEach(city => {
-                    citiesText.textContent += city + " //";
-                })
             } else {
                 data.geonames.forEach(cityInfo => {
                     //populate citiesarray with wikipedia search name from Geonames wiki
@@ -173,6 +194,7 @@ function verifyCities() {
         geocoder.geocode(geocoderRequest, function (array, status) {
             if (status === "OVER_QUERY_LIMIT") {
                 console.log("Over query limit: " + city);
+                addError(document.getElementById('message'), "Something went wrong. Please try again!")
             } else {
                 geoCodeTally++;
                 if (array) {
@@ -234,7 +256,7 @@ function deleteCityDuplicates() {
                 citiesLatLng.splice(i, 1);
             }
         }
-    })   
+    })
     getGitHubUsers();
 }
 
@@ -278,17 +300,17 @@ function getTop5(array) {
     ///array is [[city, {lat: lng: }, #], ....]
     let top5 = [];
     //make sure chosen city is displayed
-    let chosenIndex; 
-    array.forEach((cityArray, index) =>{
-        if(cityArray[0] === chosenCity + " " + chosenState){
+    let chosenIndex;
+    array.forEach((cityArray, index) => {
+        if (cityArray[0] === chosenCity + " " + chosenState) {
             top5.push(cityArray);
-            chosenIndex= index;
+            chosenIndex = index;
         }
     })
 
     for (let i = 0; i < array.length; i++) {
         //AVOID COUNTING CHOSEN CITY AGAIN
-        if(i !== chosenIndex){
+        if (i !== chosenIndex) {
             let tally = 0;
             for (let k = i + 1; k < array.length; k++) {
                 if (array[i][2] < array[k][2]) {
@@ -305,23 +327,23 @@ function getTop5(array) {
 
 //GENERATE GOOGLE MAP
 function getMap(cityArray) {
-    let button= document.getElementById('map');
-    button.insertAdjacentHTML('beforebegin', `<p id="marker-explain"> Click a marker to see the number of GitHub users.</p>`)
-    document.getElementById('map-div').style.backgroundColor= 'white';
+    document.getElementById('map-div').style.display= 'flex';
+
     map = new google.maps.Map(
         document.getElementById('map'),
-        { center: cityArray[0][1], zoom: 6 }
+        { center: cityArray[0][1], zoom: 6.5 }
     );
 
     for (let i = 0; i < cityArray.length; i++) {
         createMarker(cityArray[i][1], cityArray[i][0], cityArray[i][2])
-    }
-
+    } 
+    document.getElementById('marker-explanation').textContent= 'Click a marker to see the number of GitHub users.';
 }
 
 //GENERATE CLICKABLE MARKERS FOR MAP
 function createMarker(latLng, cityName, numberOfUsers) {
     //FORMAT CITY AS "CITY, STATE"
+
     let cityArray = cityName.split(" ");
     let formattedCity = cityArray[0];
     for (let i = 1; i < cityArray.length; i++) {
@@ -345,4 +367,8 @@ function createMarker(latLng, cityName, numberOfUsers) {
         })
         infoWindow.open(map, marker);
     });
+
+    
 }
+
+

@@ -1,6 +1,7 @@
 
 class GitHub {
     constructor(){
+       
         
     } //
 
@@ -18,18 +19,18 @@ class GitHub {
         const location= await locationResponse.json();
         
         return {
-            location  //location.total_count
+            location  
         }
     }
 }
 
 class GeoNames {
     constructor(){
-        this.username=''
+        
     }
 
     async getNearbyCities(state){
-        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${state.north}&south=${state.south}&west=${state.west}&east=${state.east}&maxRows=29&username=${this.username}`);
+        const citiesResponse= await fetch(`http://api.geonames.org/citiesJSON?north=${state.north}&south=${state.south}&west=${state.west}&east=${state.east}&maxRows=9&username=${this.username}`);
 
         const cities= await citiesResponse.json(); 
 

@@ -5,63 +5,38 @@
   <link rel="stylesheet" href="styles.css">
   <title>GitHub User Map</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+    integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 </head>
 
 <body>
-  <div class="container">
+  <div id="header" >
     <h1>GitHub User Map</h1>
-    <p>Find cities with the largest number of GitHub users near a city of your choice...</p>
+    <p id="description">Find cities with the largest number of GitHub users near a city of your choice...</p>
   </div>
-  <div id="input-div" class="container">
-    <input type="text" id="city-input" placeholder="Enter US City">
 
-    <!-- ALERTS FOR WHEN STEPS ARE COMPLETING -->
-    <div id="alerts">
-      <div id="message"></div>
+  <div id="main">
+    <div id="input-div">
+      <input type="text" id="city-input" placeholder="Enter US City">
+      <button id="get-map">Get Map of GitHub Users</button>
     </div>
+  
+      <!-- ALERTS FOR WHEN STEPS ARE COMPLETING -->
+      <div id="alerts">
+        <div id="message"></div>
+      </div>
+  
+      <!-- MAP DISPLAY -->
+      <div id='map-div'>
+        <p id='marker-explanation'></p>
+        <div id="map"></div>
+      </div>
+
+  </div>
+  
     
-
-
-    
-    <!-- -THIS IS ONLY FOR DEBUGGING TO WATCH PROGRESS -->
-  <div id='bb-div' class="container hidden">
-    <h2>Boundary Box Coordinates for State</h2>
-    <button id="get-bb">Get BB Coordinates</button>
-    <div id="coordinates-text">BB Coordinates: </div>
-  </div>
-  <div id="nearby-div" class="container hidden">
-    <button id="get-nearby-cities">Get Nearby Cities</button>
-    <div id='cities-text'>Nearby Cities:</div>
-  </div>
-  <div id="latlng-div" class="container hidden">
-    <button id="get-latlng">Get Lat Lng</button>
-    <h2>LatLng for Each city:</h2>
-    <div id='latlng-text'>Lat-Lng:</div>
-  </div>
-  <div id="github-div" class="container hidden">
-    <button id="get-gh-users">Get GitHub Users</button>
-    <h2>GitHub Users In Cities:</h2>
-    <div id="users-text">Users:</div>
-  </div>
- <!-- END OF DEBUGGING AREA ^^^^ -->
-
-
-  <div id='map-div' class="container">
-    <button id="get-map">Get Map of Users</button>
-    <div id="map"></div>
-    
-  </div>
-
-
-
-  <!-- <script id="location-script"></script> -->
-  <!-- <script id="map-script"></script> -->
-  <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"></script>
-  <script id="userlist-script" src="api.js"></script>
-  <script src='state-info.js'></script>
-  <script src="app.js"></script>
+    <script id="userlist-script" src="api.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
